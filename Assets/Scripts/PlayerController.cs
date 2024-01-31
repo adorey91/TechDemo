@@ -53,7 +53,9 @@ public class PlayerController : MonoBehaviour
         cameraForward.y = 0f;
         cameraForward.Normalize();
 
-        Vector3 movementVector = playerInput.x * Vector3.right + playerInput.y * cameraForward;
+        Vector3 cameraRight = playerCamera.transform.right;
+
+        Vector3 movementVector = playerInput.y * cameraForward + playerInput.x * cameraRight;
         movementVector.Normalize();
 
         if (isRunning)
