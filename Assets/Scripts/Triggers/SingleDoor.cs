@@ -1,82 +1,49 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SingleDoor : MonoBehaviour
 {
-    [SerializeField] private Transform door;
-    [SerializeField] private bool openDoor;
-    [SerializeField] private bool closeDoor;
-    [SerializeField] private Vector3 startPos;
-    [SerializeField] private Transform middlePosition;
-    [SerializeField] private Transform finalPosition;
+    [SerializeField] private GameObject door;
+    [SerializeField] private float openRotation;
+    [SerializeField] private float closeRotation;
+    [SerializeField] private float speed;
+    bool opening;
 
-    private void Start()
+    [SerializeField] private Vector3 weaponStart;
+    public GameObject weapon;
+
+    public PlayerMovement player;
+
+    Vector3 currentRot;
+
+    public void Start()
     {
-        startPos = door.position;
+        weaponStart = weapon.transform.position;
+
     }
 
     private void Update()
     {
-        if (openDoor)
-        {
-            door.localPosition = Vector3.MoveTowards(door.localPosition, middlePosition.localPosition, Time.deltaTime);
-           // door.localPosition = Vector3.MoveTowards(door.localPosition, finalPosition.localPosition, Time.deltaTime);
-        }
-    
-            //StartCoroutine(OpenDoors());
-       
-        else if(closeDoor)
-        {
-           // door.localPosition = Vector3.MoveTowards(door.localPosition, middlePosition.localPosition, Time.deltaTime);
+        currentRot = door.transform.localEulerAngles;
 
-            door.localPosition = Vector3.MoveTowards(door.localPosition, startPos, Time.deltaTime);
-
-        }
-            //StartCoroutine(CloseDoors());  
+        if (opening)
+            door.transform.localEulerAngles = Vector3.Lerp(currentRot, new Vector3(currentRot.x, openRotation, currentRot.z), speed * Time.deltaTime);
+        else
+            door.transform.localEulerAngles = Vector3.Lerp(currentRot, new Vector3(currentRot.x, closeRotation, currentRot.z), speed * Time.deltaTime);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("Player"))
-        {
-            openDoor = true;
-            closeDoor = false;
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if(other.gameObject.CompareTag("Player"))
-        {
-
-        }
+        weapon.transform.parent = null;
+        weapon.transform.position = weaponStart;
+        player.hasItem = false;
+        if (other.CompareTag("Player"))
+            opening = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if(other.gameObject.CompareTag("Player"))
-        {
-            openDoor = false;
-            closeDoor = true;
-        }
-    }
-
-    IEnumerator OpenDoors()
-    {
-        door.localPosition = Vector3.MoveTowards(door.localPosition, middlePosition.localPosition, Time.deltaTime);
-
-        yield return new WaitForSeconds(1.2f);
-
-        door.localPosition = Vector3.MoveTowards(door.localPosition, finalPosition.localPosition, Time.deltaTime);
-    }
-
-    IEnumerator CloseDoors()
-    {
-        door.localPosition = Vector3.MoveTowards(door.localPosition, middlePosition.localPosition, Time.deltaTime);
-
-        yield return new WaitForSeconds(1.2f);
-
-        door.localPosition = Vector3.MoveTowards(door.localPosition, startPos, Time.deltaTime);
+        if (other.CompareTag("Player"))
+            opening = false;
     }
 }
