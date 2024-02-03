@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Boundary
   - Pickup
+  - Range
+  - Maze
   layers:
   - Default
   - TransparentFX

@@ -9,7 +9,6 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 playerInput;
     private CapsuleCollider player;
 
-
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float walkSpeed;
@@ -28,12 +27,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float standingCamera;
     private float verticalRotation;
 
-    public GameObject weapon;
-    public GameObject hand;
-    [SerializeField] private bool canPickup;
+    [Header("Pick Up Settings")]
+    [SerializeField] private GameObject itemHolder;
+    private bool canPickup;
     public bool hasItem;
 
-
+    public DynamiteController dynaController;
+    private GameObject weapon;
 
     void Start()
     {
@@ -115,7 +115,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-
     public void Crouch(InputAction.CallbackContext context)     // this isnt working right?
     {
         if (context.performed)
@@ -136,20 +135,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void PickUp(InputAction.CallbackContext context)
-    {
-        if (canPickup)
-            if (context.performed)
-            {
-                weapon.GetComponent<BoxCollider>().enabled = false;
-                weapon.GetComponent<Rigidbody>().isKinematic = true;
-                weapon.transform.position = hand.transform.position;
-                weapon.transform.parent = hand.transform;
-                weapon.transform.rotation = new Quaternion(0, 0, 0, 0);
-                hasItem = true;
-            }
-    }
-
     void PlayerGrounded()
     {
         if (GetComponent<Rigidbody>().velocity.y == 0)
@@ -158,10 +143,44 @@ public class PlayerMovement : MonoBehaviour
             isGrounded = false;
     }
 
+    public void PickUp(InputAction.CallbackContext context)
+    {
+        if (canPickup)
+            if (context.performed)
+            {
+                weapon.GetComponent<BoxCollider>().enabled = false;
+                weapon.GetComponent<Rigidbody>().isKinematic = true;
+                weapon.transform.position = itemHolder.transform.position;
+                weapon.transform.parent = itemHolder.transform;
+                weapon.transform.rotation = new Quaternion(0, 0, 0, 0);
+                hasItem = true;
+            }
+    }
+
+    public void Fire(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Debug.Log("fire");
+            if (hasItem)
+            {
+                Rigidbody weaponRb = weapon.GetComponent<Rigidbody>();
+                weaponRb.isKinematic = false;
+                weapon.GetComponent<BoxCollider>().enabled = true;
+                weapon.transform.parent = null;
+                weaponRb.AddForce(transform.forward * 12f, ForceMode.Impulse);
+                weaponRb.AddForce(transform.up * 8f, ForceMode.Impulse);
+            }
+        }
+    }
+
     public void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Pickup"))
+        {
+            weapon = dynaController.weapon;
             canPickup = true;
+        }
     }
 
     public void OnTriggerExit(Collider other)
