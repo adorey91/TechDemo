@@ -8,7 +8,7 @@ public class SingleDoor : MonoBehaviour
     [SerializeField] private float closeRotation;
     [SerializeField] private float speed;
     bool opening;
-    
+
     Vector3 currentRot;
 
     private void Update()

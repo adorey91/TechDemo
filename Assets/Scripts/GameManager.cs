@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     private Vector3 originalMazePosition;
     private Vector3 originalRangePosition;
 
-    public NoGravity noGravityScript;
+    public GravityControl noGravityScript;
 
     public void Start()
     {

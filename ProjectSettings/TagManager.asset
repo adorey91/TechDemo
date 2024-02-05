@@ -8,6 +8,9 @@ TagManager:
   - Pickup
   - Range
   - Maze
+  - Gravity
+  - Fall
+  - Reset
   layers:
   - Default
   - TransparentFX
