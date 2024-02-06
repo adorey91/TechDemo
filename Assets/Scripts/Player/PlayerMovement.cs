@@ -28,9 +28,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float standingCamera;
     private float verticalRotation;
 
-    public ResetBuildings resetBuildings;
-    public FallControl fallControl;
-    public GravityControl gravityControl;
+   
 
     void Start()
     {
@@ -112,18 +110,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void Interact(InputAction.CallbackContext context)
-    {
-        if(context.performed)
-        {
-            if(playerInteractions.reset)
-                resetBuildings.resetRequested = true;
-            if(playerInteractions.fall)
-                fallControl.fallApartNow = true;
-            if(playerInteractions.gravity)
-                gravityControl.turnOffGravity = true;
-        }
-    }
+    
 
     public void Crouch(InputAction.CallbackContext context)     // this isnt working right?
     {

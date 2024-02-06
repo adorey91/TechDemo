@@ -1,43 +1,102 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerInteractions : MonoBehaviour
 {
     [Header("Building Settings")]
-    public ResetBuildings resetBuildings;
     public bool reset;
     public bool fall;
     public bool gravity;
+    public ResetBuildings resetBuildings;
+    public FallControl fallControl;
+    public GravityControl gravityControl;
 
-    public void OnTriggerEnter(Collider other)
+    [Header("Switch Settings")]
+    [SerializeField] private TextMeshPro UseText;
+    [SerializeField] private Transform Camera;
+    [SerializeField] private float MaxUseDistance = 5f;
+    [SerializeField] private LayerMask UseLayers;
+
+    [SerializeField] private bool isGamePaused;
+    public PauseMenu pauseMenu;
+
+    public void Start()
     {
-        if (other.gameObject.CompareTag("Reset"))
+        isGamePaused = false;
+    }
+
+    public void Update()
+    {
+        if (Physics.Raycast(Camera.position, Camera.forward, out RaycastHit hit, MaxUseDistance, UseLayers))
         {
-            reset = true;
-            gravity = false;
-            fall = false;
+            if (hit.collider.TryGetComponent<LeverController>(out LeverController lever))
+            {
+                if (!lever.IsLeverRotated())
+                {
+                    UseText.SetText("Press Enter To Activate");
+                    UseText.gameObject.SetActive(true);
+                    Vector3 midpoint = (hit.point + Camera.position) * 0.5f;
+                    UseText.transform.position = midpoint;
+                    UseText.transform.rotation = Quaternion.LookRotation((hit.point - Camera.position).normalized);
+
+                    string leverAsString = lever.ToString();
+
+                    if (leverAsString == "TurnOffGravity (GravityControl)")
+                    {
+                        gravity = true;
+                        reset = false;
+                        fall = false;
+                    }
+                    if (leverAsString == "ResetSwitch (ResetBuildings)")
+                    {
+                        reset = true;
+                        gravity = false;
+                        fall = false;
+                    }
+                    if (leverAsString == "FallApart (FallControl)")
+                    {
+                        fall = true;
+                        reset = false;
+                        gravity = false;
+                    }
+                }
+            }
         }
-        if (other.gameObject.CompareTag("Gravity"))
+        else
         {
-            gravity = true;
-            reset = false;
-            fall = false;
-        }
-        if (other.gameObject.CompareTag("Fall"))
-        {
-            fall = true;
-            reset = false;
-            gravity = false;
+            UseText.gameObject.SetActive(false);
+            resetBuildings.lever.transform.rotation = resetBuildings.leverRotation;
+            resetBuildings.leverRotated = false;
         }
     }
 
-    public void OnTriggerExit(Collider other)
+    public void Interact(InputAction.CallbackContext context)
     {
-        if (other.gameObject.CompareTag("Reset"))
+        if (context.performed)
         {
-            resetBuildings.lever.transform.rotation = resetBuildings.leverRotation;
-            resetBuildings.leverRotated = false;
+            if (reset)
+                resetBuildings.resetRequested = true;
+            if (fall)
+                fallControl.fallApartNow = true;
+            if (gravity)
+                gravityControl.turnOffGravity = true;
+        }
+    }
+
+    public void Pause(InputAction.CallbackContext context)
+    {
+        if (context.performed && isGamePaused == false)
+        {
+            pauseMenu.pauseGame();
+            isGamePaused = true;
+        }
+        else if(context.performed && isGamePaused == true)
+        {
+            pauseMenu.resumeGame();
+            isGamePaused = false;
         }
     }
 }

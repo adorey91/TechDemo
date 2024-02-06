@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+
 public class LeverController : MonoBehaviour
 {
     public GameObject lever;
@@ -15,6 +16,11 @@ public class LeverController : MonoBehaviour
     public void Start()
     {
         leverRotation = lever.transform.rotation;
+    }
+
+    public bool IsLeverRotated()
+    {
+        return leverRotated;
     }
 
     public void MoveLever(float targetAngle)
@@ -37,7 +43,7 @@ public class LeverController : MonoBehaviour
 
         leverRotated = true;
     }
-    
+
     public void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -46,7 +52,7 @@ public class LeverController : MonoBehaviour
 
     public void OnTriggerExit(Collider other)
     {
-        if(other.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player"))
             interactText.SetActive(false);
     }
 }
