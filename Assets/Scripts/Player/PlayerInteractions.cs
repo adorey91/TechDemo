@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,9 +8,9 @@ using UnityEngine.InputSystem;
 public class PlayerInteractions : MonoBehaviour
 {
     [Header("Building Settings")]
-    public bool reset;
-    public bool fall;
-    public bool gravity;
+    private bool reset;
+    private bool fall;
+    private bool gravity;
     public ResetBuildings resetBuildings;
     public FallControl fallControl;
     public GravityControl gravityControl;
@@ -20,7 +21,7 @@ public class PlayerInteractions : MonoBehaviour
     [SerializeField] private float MaxUseDistance = 5f;
     [SerializeField] private LayerMask UseLayers;
 
-    [SerializeField] private bool isGamePaused;
+    private bool isGamePaused;
     public PauseMenu pauseMenu;
 
     public void Start()
