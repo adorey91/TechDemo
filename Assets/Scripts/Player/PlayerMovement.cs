@@ -24,11 +24,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float mouseSensitivity;
     [SerializeField] private float upDownLimit;
     [SerializeField] private Camera playerCamera;
-    [SerializeField] private float crouchingCamera;
-    [SerializeField] private float standingCamera;
     private float verticalRotation;
-
-   
 
     void Start()
     {
@@ -110,9 +106,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    
-
-    public void Crouch(InputAction.CallbackContext context)     // this isnt working right?
+    public void Crouch(InputAction.CallbackContext context)     
     {
         if (context.performed)
         {
@@ -121,7 +115,6 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (context.canceled)
         {
-            // Only uncrouch if there is no obstacle above
             RaycastHit hit;
 
             if (!Physics.Raycast(transform.position + new Vector3(0, 1.3f, 0), Vector3.up, out hit, 2f))

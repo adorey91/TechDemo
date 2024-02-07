@@ -11,7 +11,6 @@ public class LeverController : MonoBehaviour
 
     public Quaternion leverRotation;
 
-    public GameObject interactText;
 
     public void Start()
     {
@@ -42,17 +41,5 @@ public class LeverController : MonoBehaviour
         lever.transform.rotation = Quaternion.Euler(targetRotation);
 
         leverRotated = true;
-    }
-
-    public void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-            interactText.SetActive(true);
-    }
-
-    public void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-            interactText.SetActive(false);
     }
 }
