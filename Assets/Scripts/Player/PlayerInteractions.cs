@@ -15,11 +15,14 @@ public class PlayerInteractions : MonoBehaviour
     public FallControl fallControl;
     public GravityControl gravityControl;
 
+
     [Header("Switch Settings")]
     [SerializeField] private TextMeshPro UseText;
     [SerializeField] private Transform Camera;
     [SerializeField] private float MaxUseDistance = 5f;
     [SerializeField] private LayerMask UseLayers;
+
+    private Rigidbody platform;
 
     private bool isGamePaused;
     public PauseMenu pauseMenu;
@@ -31,47 +34,7 @@ public class PlayerInteractions : MonoBehaviour
 
     public void Update()
     {
-        if (Physics.Raycast(Camera.position, Camera.forward, out RaycastHit hit, MaxUseDistance, UseLayers))
-        {
-            if (hit.collider.TryGetComponent<LeverController>(out LeverController lever))
-            {
-                if (!lever.IsLeverRotated())
-                {
-                    UseText.SetText("Press Enter To Activate");
-                    UseText.gameObject.SetActive(true);
-                    Vector3 midpoint = (hit.point + Camera.position) * 0.5f;
-                    UseText.transform.position = midpoint;
-                    UseText.transform.rotation = Quaternion.LookRotation((hit.point - Camera.position).normalized);
-
-                    string leverAsString = lever.ToString();
-
-                    if (leverAsString == "TurnOffGravity (GravityControl)")
-                    {
-                        gravity = true;
-                        reset = false;
-                        fall = false;
-                    }
-                    if (leverAsString == "ResetSwitch (ResetBuildings)")
-                    {
-                        reset = true;
-                        gravity = false;
-                        fall = false;
-                    }
-                    if (leverAsString == "FallApart (FallControl)")
-                    {
-                        fall = true;
-                        reset = false;
-                        gravity = false;
-                    }
-                }
-            }
-        }
-        else
-        {
-            UseText.gameObject.SetActive(false);
-            resetBuildings.lever.transform.rotation = resetBuildings.leverRotation;
-            resetBuildings.leverRotated = false;
-        }
+        CheckLevers();
     }
 
     public void Interact(InputAction.CallbackContext context)
@@ -94,10 +57,54 @@ public class PlayerInteractions : MonoBehaviour
             pauseMenu.pauseGame();
             isGamePaused = true;
         }
-        else if(context.performed && isGamePaused == true)
+        else if (context.performed && isGamePaused == true)
         {
             pauseMenu.resumeGame();
             isGamePaused = false;
+        }
+    }
+
+    private void CheckLevers()
+    {
+        if (Physics.Raycast(Camera.position, Camera.forward, out RaycastHit hit, MaxUseDistance, UseLayers))
+        {
+            if (hit.collider.TryGetComponent<LeverController>(out LeverController lever))
+            {
+                if (!lever.IsLeverRotated())
+                {
+                    UseText.SetText("Press Enter To Activate");
+                    UseText.gameObject.SetActive(true);
+                    Vector3 midpoint = (hit.point + Camera.position) * 0.5f;
+                    UseText.transform.position = midpoint;
+                    UseText.transform.rotation = Quaternion.LookRotation((hit.point - Camera.position).normalized);
+
+                    string leverAsString = lever.ToString();
+                    if (leverAsString == "TurnOffGravity (GravityControl)")
+                    {
+                        gravity = true;
+                        reset = false;
+                        fall = false;
+                    }
+                    if (leverAsString == "ResetSwitch (ResetBuildings)")
+                    {
+                        reset = true;
+                        gravity = false;
+                        fall = false;
+                    }
+                    if (leverAsString == "FallApart (FallControl)")
+                    {
+                        fall = true;
+                        reset = false;
+                        gravity = false;
+                    }
+                }
+            }
+            else
+            {
+                UseText.gameObject.SetActive(false);
+                resetBuildings.lever.transform.rotation = resetBuildings.leverRotation;
+                resetBuildings.leverRotated = false;
+            }
         }
     }
 }

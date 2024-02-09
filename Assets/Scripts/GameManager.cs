@@ -21,10 +21,9 @@ public class GameManager : MonoBehaviour
 
     public GameObject gemPrefab;
     private GameObject gemInstanceClone;
-    public Vector3 gemPos1;
-    public Vector3 gemPos2;
+    [SerializeField] private List<Vector3> gemPos;
 
-    [SerializeField] private int count = 0;
+    [SerializeField] private int countIndex = 0;
     private int gemHolderCount;
 
     public void Start()
@@ -32,6 +31,7 @@ public class GameManager : MonoBehaviour
         gemHolderCount = 0;
         GameObject.Instantiate(levelBoundaries);
         BuildBuildings();
+        GemIndex();
     }
 
     public void Update()
@@ -42,8 +42,8 @@ public class GameManager : MonoBehaviour
     void CreateGem()
     {
         gemInstanceClone = GameObject.Find("GemPickup(Clone)");
-        
-        if (gemInstanceClone == null && gemHolderCount <10)
+
+        if (gemInstanceClone == null && gemHolderCount < 10)
         {
             InstantiateGem();
             gemHolderCount++;
@@ -52,19 +52,10 @@ public class GameManager : MonoBehaviour
 
     void InstantiateGem()
     {
-        gemPos1 = new Vector3(-7.82f, 1.059f, 11.72f);
-        gemPos2 = gemPos1 + new Vector3(10, 0, 10);
-
-        if(count == 0)
-        {
-            gemInstanceClone = Instantiate(gemPrefab, gemPos2, Quaternion.identity);
-            count++;
-        }
-        else if (count == 1)
-        {
-            gemInstanceClone = Instantiate(gemPrefab, gemPos1, Quaternion.identity);
-            count--;
-        }
+        gemInstanceClone = Instantiate(gemPrefab, gemPos[countIndex], Quaternion.identity);
+        countIndex++;
+        if (countIndex >= gemPos.Count)
+            countIndex = 0;
     }
 
     void BuildBuildings()
@@ -77,5 +68,18 @@ public class GameManager : MonoBehaviour
 
         noGravityScript.AddRigidbodiesFromChildren(mazeInstance, noGravityScript.MazeList);
         noGravityScript.AddRigidbodiesFromChildren(rangeInstance, noGravityScript.RangeList);
+    }
+
+
+    public void GemIndex()
+    {
+        gemPos = new List<Vector3>()
+        {
+            new Vector3(-7.82f, 1.059f, 11.72f),
+            new Vector3(14.87f, 1.059f, 4.28f),
+            new Vector3(-2.18f, 1.059f, 29.64f),
+            new Vector3(13.03f, 4.095f, 29.15f),
+            new Vector3(34.03f, 1.059f, -13.09f)
+        };
     }
 }

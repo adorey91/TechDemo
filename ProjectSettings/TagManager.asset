@@ -11,6 +11,7 @@ TagManager:
   - Gravity
   - Fall
   - Reset
+  - Platform
   layers:
   - Default
   - TransparentFX
@@ -19,9 +20,9 @@ TagManager:
   - Water
   - UI
   - Switch
-  - 
-  - 
-  - 
+  - Ground
+  - Floor
+  - Platform
   - 
   - 
   - 

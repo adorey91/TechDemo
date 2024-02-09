@@ -8,7 +8,6 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private Vector2 playerInput;
     private CapsuleCollider player;
-    public PlayerInteractions playerInteractions;
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed;
@@ -18,7 +17,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float standingHeight;
     private bool isCrouched;
     private bool isRunning;
-    private bool isGrounded;
+    [SerializeField] LayerMask ground;
+
 
     [Header("View Settings")]
     [SerializeField] private float mouseSensitivity;
@@ -33,11 +33,6 @@ public class PlayerMovement : MonoBehaviour
         Cursor.visible = true;
     }
 
-    void Update()
-    {
-        Debug.DrawRay(transform.position + new Vector3(0, 1.3f, 0), Vector3.up, Color.blue);
-    }
-
     public void FixedUpdate()
     {
         MovePlayer();
@@ -48,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer()
     {
-        PlayerGrounded();
+        isGrounded();
 
         Vector3 cameraForward = playerCamera.transform.forward;
         cameraForward.y = 0f;
@@ -100,13 +95,13 @@ public class PlayerMovement : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if (context.performed && isGrounded)
+        if (context.performed && isGrounded())
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
 
-    public void Crouch(InputAction.CallbackContext context)     
+    public void Crouch(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
@@ -125,11 +120,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void PlayerGrounded()
+    bool isGrounded()
     {
-        if (GetComponent<Rigidbody>().velocity.y == 0)
-            isGrounded = true;
-        else
-            isGrounded = false;
+        return Physics.CheckSphere(transform.position, 0.1f, ground);
     }
 }

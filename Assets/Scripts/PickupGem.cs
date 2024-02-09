@@ -26,6 +26,6 @@ public class PickupGem : MonoBehaviour
     void AddGemUI()
     {
         GameObject NewUIGem = Instantiate(gemUIPrefab);
-        NewUIGem.transform.parent = uiParent.transform;
+        NewUIGem.transform.SetParent(uiParent.transform);
     }
 }
