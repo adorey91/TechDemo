@@ -22,8 +22,6 @@ public class PlayerInteractions : MonoBehaviour
     [SerializeField] private float MaxUseDistance = 5f;
     [SerializeField] private LayerMask UseLayers;
 
-    private Rigidbody platform;
-
     private bool isGamePaused;
     public PauseMenu pauseMenu;
 
@@ -99,12 +97,12 @@ public class PlayerInteractions : MonoBehaviour
                     }
                 }
             }
+        }
             else
             {
                 UseText.gameObject.SetActive(false);
                 resetBuildings.lever.transform.rotation = resetBuildings.leverRotation;
                 resetBuildings.leverRotated = false;
             }
-        }
     }
 }

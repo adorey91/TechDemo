@@ -8,11 +8,13 @@ public class PauseMenu : MonoBehaviour
 {
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private GameObject controlsPanel;
 
 
     public void pauseGame()
     {
         pausePanel.SetActive(true);
+        controlsPanel.SetActive(false); 
         rb.isKinematic = true;
         Cursor.visible = true;
         Time.timeScale = 0f;
@@ -21,6 +23,7 @@ public class PauseMenu : MonoBehaviour
     public void resumeGame()
     {
         pausePanel.SetActive(false);
+        controlsPanel.SetActive(false);
         rb.isKinematic = false;
         Cursor.visible = false;
         Time.timeScale = 1f;
@@ -35,5 +38,11 @@ public class PauseMenu : MonoBehaviour
     public void quitGame()
     {
         Application.Quit();
+    }
+
+    public void ControlsPage()
+    {
+        pausePanel.SetActive(false);
+        controlsPanel.SetActive(true);
     }
 }

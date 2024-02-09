@@ -26,6 +26,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     private float verticalRotation;
 
+    [SerializeField] private WaypointFollower waypointFollower;
+    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private GameObject controlsPanel;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -61,7 +65,10 @@ public class PlayerMovement : MonoBehaviour
         if (!isRunning && !isCrouched)
             moveSpeed = walkSpeed;
 
-        rb.MovePosition(rb.position + movementVector.normalized * moveSpeed * Time.fixedDeltaTime);
+        if (waypointFollower.playerOn)
+            MovePlayerOnPlatform();
+        else
+            rb.MovePosition(rb.position + movementVector.normalized * moveSpeed * Time.fixedDeltaTime);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -71,17 +78,20 @@ public class PlayerMovement : MonoBehaviour
 
     public void Look(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if(!pausePanel.activeSelf && !controlsPanel.activeSelf)
         {
-            Vector2 mouseDelta = context.ReadValue<Vector2>();
+            if (context.performed)
+            {
+                Vector2 mouseDelta = context.ReadValue<Vector2>();
 
-            float mouseRotationX = mouseDelta.x * mouseSensitivity;
-            this.transform.Rotate(0, mouseRotationX, 0);
+                float mouseRotationX = mouseDelta.x * mouseSensitivity;
+                this.transform.Rotate(0, mouseRotationX, 0);
 
-            verticalRotation -= mouseDelta.y * mouseSensitivity;
-            verticalRotation = Mathf.Clamp(verticalRotation, -upDownLimit, upDownLimit);
+                verticalRotation -= mouseDelta.y * mouseSensitivity;
+                verticalRotation = Mathf.Clamp(verticalRotation, -upDownLimit, upDownLimit);
 
-            playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
+                playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
+            }
         }
     }
 
@@ -123,5 +133,22 @@ public class PlayerMovement : MonoBehaviour
     bool isGrounded()
     {
         return Physics.CheckSphere(transform.position, 0.1f, ground);
+    }
+
+    void MovePlayerOnPlatform()
+    {
+        Vector3 destination = waypointFollower.GetDestination();
+        float movingSpeed = waypointFollower.speed;
+
+        Vector3 direction = (destination - rb.position).normalized;
+
+        Vector3 newPosition = Vector3.MoveTowards(rb.position, destination, Time.deltaTime * movingSpeed);
+        rb.MovePosition(newPosition);
+
+        Vector3 movementVector = new Vector3(playerInput.x, 0f, playerInput.y);
+
+        Vector3 targetVelocity = (movementVector.x * playerCamera.transform.right + movementVector.z * playerCamera.transform.forward).normalized * moveSpeed;
+        targetVelocity.y = rb.velocity.y;
+        rb.velocity = targetVelocity;
     }
 }

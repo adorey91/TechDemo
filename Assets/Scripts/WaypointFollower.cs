@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class WaypointFollower : MonoBehaviour
 {
-    [SerializeField] private GameObject[] waypoints;
+   [SerializeField] private GameObject[] waypoints;
     private int currentWaypointIndex = 0;
+    private Vector3 destination;
 
-    [SerializeField] private float speed = 1f;
+    public float speed = 1f;
 
-    bool playerOn;
+    public bool playerOn;
 
-    void Update()
+    void FixedUpdate()
     {
         if(playerOn)
         {
-            if(Vector3.Distance(transform.position, waypoints[currentWaypointIndex].transform.position) < 0.1f)
+            if(Vector3.Distance(transform.position, GetDestination()) < 0.1f)
             {
                 currentWaypointIndex++;
 
@@ -31,12 +32,25 @@ public class WaypointFollower : MonoBehaviour
     public void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Player"))
+        {
             playerOn = true;
+            collision.transform.SetParent(transform);
+        }
     }
 
     public void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.CompareTag("Player"))
+        {
             playerOn = false;
+            collision.transform.SetParent(null);
+
+        }
+    }
+
+    public Vector3 GetDestination()
+    {
+        destination = waypoints[currentWaypointIndex].transform.position;
+        return destination;
     }
 }
