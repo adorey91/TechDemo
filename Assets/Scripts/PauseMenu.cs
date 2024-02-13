@@ -18,6 +18,7 @@ public class PauseMenu : MonoBehaviour
         rb.isKinematic = true;
         Cursor.visible = true;
         Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void resumeGame()
@@ -27,6 +28,7 @@ public class PauseMenu : MonoBehaviour
         rb.isKinematic = false;
         Cursor.visible = false;
         Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void resetGame()

@@ -34,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         player = GetComponent<CapsuleCollider>();
-        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void FixedUpdate()
